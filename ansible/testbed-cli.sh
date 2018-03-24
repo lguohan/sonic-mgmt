@@ -116,7 +116,7 @@ function generate_minigraph
 
   read_file $1
 
-  ansible-playbook -i lab config_sonic_basedon_testbed.yml --vault-password-file="$2" -l "$dut" -e vm_base="$vm_base" -e topo="$topo"
+  ansible-playbook -i lab config_sonic_basedon_testbed.yml --vault-password-file="$2" -l "$dut" -e uniq_name="$1" -v
 
   echo Done
 }
@@ -127,7 +127,7 @@ function deploy_minigraph
 
   read_file $1
 
-  ansible-playbook -i lab config_sonic_basedon_testbed.yml --vault-password-file="$2" -l "$dut" -e vm_base="$vm_base" -e topo="$topo" -e deploy=true -e save=true
+  ansible-playbook -i lab config_sonic_basedon_testbed.yml --vault-password-file="$2" -l "$dut" -e uniq_name="$1" -e deploy=true -e save=true
 
   echo Done
 }
