@@ -61,3 +61,8 @@ vlab-02 ansible_host=10.250.0.102 type=kvm hwsku=Force10-S6100 serial_port=9000
 vlab-03 ansible_host=10.250.0.105 type=kvm hwsku=Force10-S6000 serial_port=9001
 vlab-simx-01 ansible_host=10.250.0.103 type=simx hwsku=MSN2700
 vlab-simx-02 ansible_host=10.250.0.104 type=simx hwsku=MSN3700
+
+[ptf]
+ptf-t0      ansible_host=10.250.0.102 ansible_ssh_user=root ansible_ssh_pass=root
+ptf-t0-64   ansible_host=10.250.0.102 ansible_ssh_user=root ansible_ssh_pass=root
+ptf-t1-lag  ansible_host=10.250.0.106 ansible_ssh_user=root ansible_ssh_pass=root

@@ -61,7 +61,7 @@
       set_fact:
           server_csr: "{{ telemetry_certs['server_csr'] }}"
       when: telemetry_certs['server_csr'] is defined
- 
+
     - name: read server cer
       set_fact:
           server_cer: "{{ telemetry_certs['server_cer'] }}"
@@ -91,14 +91,14 @@
       openssl_privatekey:
           path: "{{ server_key }}"
           size: 2048
-      become: true 
+      become: true
 
     - name: create telemetry server csr
       openssl_csr:
           path: "{{ telemetry_certs['server_csr'] }}"
           privatekey_path: "{{ server_key }}"
       become: true
-    
+
     - name: Generate a Self Signed OpenSSL telemetry server certificate
       openssl_certificate:
           path: "{{ server_cer }}"
@@ -112,13 +112,13 @@
           path: "{{ dsmsroot_key }}"
           size: 2048
       become: true
-   
+
     - name: create telemetry dsmsroot csr
       openssl_csr:
           path: "{{ dsmsroot_csr }}"
           privatekey_path: "{{ dsmsroot_key }}"
       become: true
-    
+
     - name: Generate a Self Signed OpenSSL telemetry dsmsroot certificate
       openssl_certificate:
           path: "{{ dsmsroot_cer }}"
@@ -152,31 +152,9 @@
       when: testbed_name is defined
 
     - name: Set ptf_host
-      set_fact:
-        ptf_host: "{{ testbed_facts['ptf_ip'] }}"
-
-    - fail: msg="Please set ptf_host first"
-      when: ptf_host is not defined
-
-    - name: create dir on ptfhost
-      file:
-          path: "{{ dir_path }}"
-          state: directory
-      become: true
-      delegate_to: "{{ ptf_host }}"
-
-    - name: Copy certs on ptfhost
-      synchronize:
-          src: "{{ dir_path }}"
-          dest: "{{ dir_path }}"
-      become: true
-      delegate_to: "{{ ptf_host }}"
-
-    - name: Rename dsmsroot.cer to client cer
-      command: mv "{{ dsmsroot_cer }}" "{{ client_cer }}"
-
-    - name: Rename dsmsroot.key to client key
-      command: mv "{{ dsmsroot_key }}" "{{ client_key }}"
+      add_host:
+        name: "{{ testbed_facts['ptf'] }}"
+        groups: ptf
 
   - topo_facts: topo={{ topo }}
     delegate_to: localhost
@@ -255,7 +233,7 @@
         delegate_to: localhost
 
       - name: debug print stat_result
-        debug: 
+        debug:
             msg: Stat result is {{ stat_result }}
 
       - name: Copy corresponding configlet files if exist
@@ -335,13 +313,13 @@
 
       - debug: msg={{ docker_status.stdout_lines }}
 
-      - name: execute cli "config load_minigraph -y" to apply new minigraph
-        become: true
-        shell: config load_minigraph -y
+#      - name: execute cli "config load_minigraph -y" to apply new minigraph
+#        become: true
+#        shell: config load_minigraph -y
 
-      - name: execute cli "config bgp startup all" to bring up all bgp sessions for test
-        become: true
-        shell: config bgp startup all
+#      - name: execute cli "config bgp startup all" to bring up all bgp sessions for test
+#        become: true
+#        shell: config bgp startup all
 
       - name: execute configlet application script, which applies configlets in strict order.
         become: true
@@ -353,3 +331,19 @@
         shell: config save -y
         when: save is defined and save|bool == true
     when: deploy is defined and deploy|bool == true
+
+- hosts: [ptf]
+  gather_facts: no
+  tasks:
+
+    - name: create dir on ptfhost
+      file:
+          path: "{{ dir_path }}"
+          state: directory
+      become: true
+
+    - name: Copy certs on ptfhost
+      synchronize:
+          src: "{{ dir_path }}"
+          dest: "{{ dir_path }}"
+      become: true
