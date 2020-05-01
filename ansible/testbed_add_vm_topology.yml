@@ -27,7 +27,7 @@
 # -e ptf_ipv6=fec0::ffff:afa:1/64 - the ipv6 address and prefix of ptf container mgmt interface
 # -e topo=t0                 - the name of removed topo
 # -e ptf_imagename=docker-ptf - name of a docker-image which will be used for the ptf docker container
-# -e vm_type=veos|ceos|vsonic
+# -e vm_type=veos|ceos|csonic|vsonic
 # -e netns_mgmt_ip=10.255.0.254/23 - the ip address and prefix of netns mgmt interface, only for dualtor topo with ports in active-active cable type
 
 - hosts: servers:&vm_host
@@ -161,7 +161,7 @@
 
   roles:
     - { role: eos, when: topology.VMs is defined and VM_targets is defined and inventory_hostname in VM_targets and (vm_type == "veos" or vm_type == "ceos" ) } # If the vm_type is eos based, role eos will be executed in any case, and when will evaluate with every task
-    - { role: sonic, when: topology.VMs is defined and VM_targets is defined and inventory_hostname in VM_targets and (vm_type == "vsonic" ) } # If the vm_type is sonic based, role sonic will be executed in any case, and when will evaluate with every task
+    - { role: sonic, when: topology.VMs is defined and VM_targets is defined and inventory_hostname in VM_targets and (vm_type == "vsonic" or vm_type == "csonic" ) } # If the vm_type is sonic based, role sonic will be executed in any case, and when will evaluate with every task
     - { role: cisco, when: topology.VMs is defined and VM_targets is defined and inventory_hostname in VM_targets and (vm_type == "vcisco" ) } # If the vm_type is cisco based, role cisco will be executed in any case, and when will evaluate with every task
 
 - hosts: servers:&vm_host
