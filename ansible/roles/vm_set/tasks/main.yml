@@ -92,6 +92,21 @@
   become: yes
   when: host_distribution_version.stdout == "20.04"
 
+- name: Get default pip_executable
+  set_fact:
+    pip_executable: pip
+  when: pip_executable is not defined and host_distribution_version.stdout != "20.04"
+
+- name: Get default pip_executable
+  set_fact:
+    pip_executable: pip3
+  when: pip_executable is not defined and host_distribution_version.stdout == "20.04"
+
+- name: Install flask
+  pip: name=flask version=1.1.2 state=forcereinstall executable={{ pip_executable }}
+  become: yes
+  environment: "{{ proxy_env | default({}) }}"
+
 - include_tasks: docker.yml
 
 - name: Ensure {{ ansible_user }} in docker,sudo group
